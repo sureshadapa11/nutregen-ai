@@ -1,0 +1,47 @@
+{
+    "rs4988235": {
+        "gene": "MCM6",
+        "trait": "Lactose Intolerance",
+        "genotypes": {
+            "AA": "Likely tolerant",
+            "AG": "Possibly intolerant",
+            "GG": "Likely intolerant"
+        }
+    },
+    "rs9939609": {
+        "gene": "FTO",
+        "trait": "Obesity Risk",
+        "genotypes": {
+            "TT": "Low risk",
+            "TA": "Moderate risk",
+            "AA": "High risk"
+        }
+    },
+    "rs671": {
+        "gene": "ALDH2",
+        "trait": "Alcohol Sensitivity",
+        "genotypes": {
+            "GG": "Low sensitivity",
+            "GA": "Moderate sensitivity",
+            "AA": "High sensitivity"
+        }
+    },
+    "rs1801133": {
+        "gene": "MTHFR",
+        "trait": "Folate Processing",
+        "genotypes": {
+            "CC": "Normal",
+            "CT": "Reduced efficiency",
+            "TT": "Significantly reduced"
+        }
+    },
+    "rs762551": {
+        "gene": "CYP1A2",
+        "trait": "Caffeine Metabolism",
+        "genotypes": {
+            "AA": "Fast metabolizer",
+            "AC": "Medium metabolizer",
+            "CC": "Slow metabolizer"
+        }
+    }
+}
