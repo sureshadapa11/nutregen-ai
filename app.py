@@ -8,6 +8,8 @@ from flask_cors import CORS
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
+from datetime import datetime, timezone
+
 
 # ---------------------------
 # App setup
@@ -163,7 +165,7 @@ def generate_plan():
         return "Only .txt DNA files are allowed.", 400
 
     # Save upload
-    ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     safe_email = email.replace("@", "_at_").replace(".", "_")
     filename = f"{safe_email}_{ts}.txt"
     upload_path = os.path.join("uploads", filename)
