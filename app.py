@@ -88,13 +88,44 @@ def verify_reset_token(token, max_age=3600):  # 1 hour
         return None
 
 def send_reset_email_via_resend(to_email, reset_link):
-    """
-    Uses Resend API to send the reset link.
-    Set RESEND_API_KEY and FROM_EMAIL in Render environment.
-    """
     if not RESEND_API_KEY:
         print("WARNING: RESEND_API_KEY not set; skipping email send.")
-        return True  # don't fail in dev
+        return True
+
+    subject = "Reset your NutreGen AI password"
+    html = f"""
+    <p>Hello,</p>
+    <p>We received a request to reset your NutreGen AI password.</p>
+    <p>Click the link below to set a new password (valid for 1 hour):</p>
+    <p><a href="{reset_link}">{reset_link}</a></p>
+    <p>If you didn’t request this, you can ignore this email.</p>
+    <p>— NutreGen AI</p>
+    """
+    try:
+        resp = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {RESEND_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": f"NutreGen AI <{FROM_EMAIL}>",
+                "to": [to_email],
+                "subject": subject,
+                "html": html,
+            },
+            timeout=15,
+        )
+        print("RESEND STATUS:", resp.status_code)
+        try:
+            print("RESEND BODY:", resp.text[:500])
+        except Exception:
+            pass
+        return resp.status_code in (200, 201, 202)
+    except Exception as e:
+        print("Resend exception:", e)
+        return False
+
 
     subject = "Reset your NutreGen AI password"
     html = f"""
