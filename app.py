@@ -232,6 +232,7 @@ def api_password_reset():
         return jsonify({"ok": True})
     token = make_reset_token(email)
     reset_link = f"{BASE_URL}/reset?token={token}"
+    print("RESET LINK:", reset_link)
     send_reset_email_via_resend(email, reset_link)
     return jsonify({"ok": True})
 
