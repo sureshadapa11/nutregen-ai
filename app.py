@@ -1,4 +1,7 @@
 # app.py
+import io
+from flask import send_file
+from xhtml2pdf import pisa
 import os
 import json
 import csv
@@ -162,6 +165,67 @@ def send_reset_email_via_resend(to_email, reset_link):
 # ---------------------------
 # Web pages
 # ---------------------------
+
+def html_to_pdf_bytes(html_str: str) -> bytes:
+    """Render HTML to PDF bytes using xhtml2pdf."""
+    out = io.BytesIO()
+    # pisa expects a file-like object for src
+    pisa_status = pisa.CreatePDF(io.StringIO(html_str), dest=out)
+    if pisa_status.err:
+        raise RuntimeError("PDF generation failed")
+    return out.getvalue()
+@app.route("/download-pdf", methods=["POST"])
+def download_pdf():
+    """
+    Accepts the same fields the result page already has and returns a PDF download.
+    """
+    # Collect fields (posted by the button on result.html)
+    name = request.form.get("name", "")
+    email = request.form.get("email", "")
+    activity = request.form.get("activity", "")
+    traits = request.form.getlist("traits")  # multiple
+    calories = request.form.get("calories", "")
+    # macros as numbers
+    macros = {
+        "carbs": int(request.form.get("macros_carbs", "0") or 0),
+        "fats": int(request.form.get("macros_fats", "0") or 0),
+        "protein": int(request.form.get("macros_protein", "0") or 0),
+    }
+
+    # meal plan (sent as JSON text)
+    try:
+        plan_json = request.form.get("plan_json", "[]")
+        plan = json.loads(plan_json)
+    except Exception:
+        plan = []
+
+    dna_summary = request.form.get("dna_summary", "")
+
+    # Render HTML for the PDF
+    html = render_template(
+        "pdf_template.html",
+        name=name,
+        email=email,
+        activity=activity,
+        traits=traits,
+        calories=calories,
+        macros=macros,
+        plan=plan,
+        dna_summary=dna_summary,
+    )
+
+    # Convert to PDF
+    pdf_bytes = html_to_pdf_bytes(html)
+
+    # Send as a file download
+    filename = f"NutreGenAI_Plan_{name or 'client'}.pdf"
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=filename,
+    )
+
 
 @app.route("/")
 def home():
