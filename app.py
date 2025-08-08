@@ -318,3 +318,19 @@ def healthz():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "5000"))
     app.run(host="0.0.0.0", port=port, debug=True)
+
+@app.route("/diag/send-test")
+def diag_send_test():
+    # Mask the API key so it’s safe in logs
+    masked = (RESEND_API_KEY[:6] + "..." + RESEND_API_KEY[-4:]) if RESEND_API_KEY else "MISSING"
+    to = request.args.get("to") or "youremail@example.com"
+    link = f"{BASE_URL}/reset?token=test"
+    ok = send_reset_email_via_resend(to, link)
+    return jsonify({
+        "resend_api_key_present": bool(RESEND_API_KEY),
+        "resend_api_key_masked": masked,
+        "from_email": FROM_EMAIL,
+        "base_url": BASE_URL,
+        "sent_ok": ok
+    })
+
