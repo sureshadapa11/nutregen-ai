@@ -3,3 +3,4 @@ xhtml2pdf
 flask-cors
 itsdangerous
 sendgrid
+werkzeug
