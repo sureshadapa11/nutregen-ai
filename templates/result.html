@@ -49,6 +49,38 @@
     <p style="margin-top:16px;">
       <a href="/form">← Create another plan</a>
     </p>
+    <hr style="margin: 16px 0;">
+
+<form action="/download-pdf" method="POST">
+  <!-- Required fields -->
+  <input type="hidden" name="name" value="{{ name }}">
+  <input type="hidden" name="email" value="{{ email }}">
+  <input type="hidden" name="activity" value="{{ activity }}">
+  <input type="hidden" name="calories" value="{{ calories }}">
+  <input type="hidden" name="macros_carbs" value="{{ macros.carbs }}">
+  <input type="hidden" name="macros_fats" value="{{ macros.fats }}">
+  <input type="hidden" name="macros_protein" value="{{ macros.protein }}">
+
+  <!-- Traits (multiple) -->
+  {% if traits %}
+    {% for t in traits %}
+      <input type="hidden" name="traits" value="{{ t }}">
+    {% endfor %}
+  {% endif %}
+
+  <!-- Meal plan as JSON -->
+  <input type="hidden" name="plan_json" value='{{ plan|tojson }}'>
+
+  <!-- DNA summary text -->
+  <input type="hidden" name="dna_summary" value="{{ dna_summary }}">
+
+  <button type="submit" style="
+    width: 100%; padding: 12px 16px; border: none; border-radius: 10px;
+    background: #2e7d32; color: #fff; font-weight: 700; cursor: pointer;">
+    Download PDF
+  </button>
+</form>
+
   </div>
 </body>
 </html>
