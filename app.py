@@ -12,7 +12,13 @@ import requests
 # ---------------------------
 # App setup
 # ---------------------------
+
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10MB max upload
+
+def is_allowed(filename):
+    return filename.lower().endswith(".txt")
+
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret")  # set on Render
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -153,6 +159,8 @@ def generate_plan():
 
     if not name or not email or not activity or not dna_file:
         return "Missing required fields.", 400
+    if not is_allowed(dna_file.filename):
+    return "Only .txt DNA files are allowed.", 400
 
     # Save upload
     ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
