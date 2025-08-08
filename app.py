@@ -160,7 +160,7 @@ def generate_plan():
     if not name or not email or not activity or not dna_file:
         return "Missing required fields.", 400
     if not is_allowed(dna_file.filename):
-    return "Only .txt DNA files are allowed.", 400
+        return "Only .txt DNA files are allowed.", 400
 
     # Save upload
     ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
