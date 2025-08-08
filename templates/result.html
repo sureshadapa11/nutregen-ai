@@ -1,72 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Nutrition Plan Results</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2fdf2;
-            padding: 20px;
-            max-width: 700px;
-            margin: auto;
-        }
-        h1, h2 {
-            color: #2c662d;
-        }
-        .section {
-            background: #ffffff;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 6px rgba(0,0,0,0.1);
-        }
-        ul {
-            padding-left: 20px;
-        }
-        button {
-            background: #4caf50;
-            color: white;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="utf-8">
+  <title>Your Plan — NutreGen AI</title>
+  <style>
+    body{font-family:Arial, sans-serif; background:#f6fff8; padding:24px}
+    .card{max-width:800px; margin:0 auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.06)}
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .pill{display:inline-block; background:#eef8f0; border:1px solid #dcefe0; padding:6px 10px; border-radius:999px; margin:4px 6px 0 0}
+    table{width:100%; border-collapse:collapse; margin-top:10px}
+    td,th{border:1px solid #e6efe8; padding:10px; text-align:left}
+  </style>
 </head>
 <body>
+  <div class="card">
+    <h1>Your personalised plan</h1>
+    <p><strong>Name:</strong> {{ name }}<br>
+       <strong>Email:</strong> {{ email }}</p>
 
-    <h1>Hello {{ name }}, here’s your personalized plan!</h1>
-
-    <div class="section">
-        <h2>🧬 Detected Genetic Traits</h2>
-        <ul>
-            {% for trait in traits %}
-            <li>{{ trait }}</li>
-            {% endfor %}
-        </ul>
+    <div class="grid">
+      <div>
+        <p><strong>Activity:</strong> {{ activity }}</p>
+        <p><strong>Genetic traits:</strong>
+          {% if traits and traits|length %}
+            {% for t in traits %}<span class="pill">{{ t }}</span>{% endfor %}
+          {% else %} None provided
+          {% endif %}
+        </p>
+        <p><strong>DNA file:</strong> {{ dna_summary }}</p>
+      </div>
+      <div>
+        <p><strong>Target calories:</strong> {{ calories }} kcal/day</p>
+        <p><strong>Macros:</strong><br>
+          Carbs: {{ macros.carbs }}%<br>
+          Fats: {{ macros.fats }}%<br>
+          Protein: {{ macros.protein }}%</p>
+      </div>
     </div>
 
-    <div class="section">
-        <h2>🍽 Recommended Meal Plan</h2>
-        <ul>
-            {% for item in meal_plan %}
-            <li>{{ item }}</li>
-            {% endfor %}
-        </ul>
-    </div>
+    <h2>Meal ideas</h2>
+    <table>
+      <tr><th>Meal</th><th>Idea</th><th>Notes</th></tr>
+      {% for m in plan %}
+        <tr><td>{{ m.meal }}</td><td>{{ m.idea }}</td><td>{{ m.notes }}</td></tr>
+      {% endfor %}
+    </table>
 
-    <form method="POST" action="/download-pdf">
-        <input type="hidden" name="name" value="{{ name }}">
-        {% for trait in traits %}
-        <input type="hidden" name="traits" value="{{ trait }}">
-        {% endfor %}
-        {% for item in meal_plan %}
-        <input type="hidden" name="meal_plan" value="{{ item }}">
-        {% endfor %}
-        <button type="submit">📥 Download PDF</button>
-    </form>
-
+    <p style="margin-top:16px;">
+      <a href="/form">← Create another plan</a>
+    </p>
+  </div>
 </body>
 </html>
