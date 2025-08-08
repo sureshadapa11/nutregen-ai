@@ -1,68 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>NutreGen AI - DNA Nutrition Form</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f1fef3;
-            padding: 20px;
-            max-width: 600px;
-            margin: auto;
-        }
-        h1 {
-            color: #2e7d32;
-        }
-        form {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 6px rgba(0,0,0,0.1);
-        }
-        label {
-            display: block;
-            margin: 15px 0 5px;
-        }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-        button {
-            background: #4caf50;
-            color: white;
-            padding: 10px 16px;
-            border: none;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="utf-8">
+  <title>NutreGen AI — DNA Form</title>
+  <style>
+    body{font-family:Arial, sans-serif; background:#f6fff8; padding:24px}
+    .card{max-width:680px; margin:0 auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.06)}
+    label{display:block; margin:12px 0 6px; font-weight:600}
+    input, select{width:100%; padding:10px; border:1px solid #cfe7d1; border-radius:10px}
+    button{margin-top:16px; padding:12px 16px; border:none; border-radius:10px; background:#2e7d32; color:#fff; font-weight:700; cursor:pointer; width:100%}
+  </style>
 </head>
 <body>
-    <h1>NutreGen AI Nutrition Form</h1>
+  <div class="card">
+    <h1>NutreGen AI — DNA Nutrition Form</h1>
     <form action="/generate" method="POST" enctype="multipart/form-data">
-        <label for="name">Your Name:</label>
-        <input type="text" name="name" required>
+      <label>Name</label>
+      <input type="text" name="name" required>
 
-        <label for="email">Your Email:</label>
-        <input type="email" name="email" required>
+      <label>Email</label>
+      <input type="email" name="email" required>
 
-        <label for="activity">Activity Level:</label>
-        <select name="activity" required>
-            <option value="">-- Select --</option>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-        </select>
+      <label>Activity level</label>
+      <select name="activity" required>
+        <option value="">— Select —</option>
+        <option>Low</option>
+        <option>Moderate</option>
+        <option>High</option>
+      </select>
 
-        <label for="dna">Upload Your DNA File (.txt):</label>
-        <input type="file" name="dna" accept=".txt" required>
+      <label>Genetic traits (optional)</label>
+      <div>
+        <label><input type="checkbox" name="traits" value="Lactose Intolerant"> Lactose Intolerant</label>
+        <label><input type="checkbox" name="traits" value="Gluten Sensitive"> Gluten Sensitive</label>
+        <label><input type="checkbox" name="traits" value="Slow Fat Metabolism"> Slow Fat Metabolism</label>
+        <label><input type="checkbox" name="traits" value="High Carb Sensitivity"> High Carb Sensitivity</label>
+      </div>
 
-        <button type="submit">Generate Plan</button>
+      <label>Upload DNA file (.txt)</label>
+      <input type="file" name="dna" accept=".txt" required>
+
+      <button type="submit">Generate my personalised plan</button>
     </form>
+  </div>
 </body>
 </html>
