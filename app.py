@@ -209,7 +209,7 @@ def generate_plan():
             writer = csv.writer(f)
             if not exists:
                 writer.writerow(["timestamp", "name", "email", "activity", "traits", "file"])
-            writer.writerow([datetime.utcnow().isoformat(), name, email, activity, "|".join(traits), filename])
+            writer.writerow([datetime.now(timezone.utc).isoformat(), name, email, activity, "|".join(traits), filename])
     except Exception as e:
         print("CSV log error:", e)
 
