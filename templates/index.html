@@ -1,47 +1,133 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>NutreGen AI — DNA Form</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>NutreGen AI — DNA & Lifestyle Form</title>
   <style>
-    body{font-family:Arial, sans-serif; background:#f6fff8; padding:24px}
-    .card{max-width:680px; margin:0 auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.06)}
-    label{display:block; margin:12px 0 6px; font-weight:600}
-    input, select{width:100%; padding:10px; border:1px solid #cfe7d1; border-radius:10px}
-    button{margin-top:16px; padding:12px 16px; border:none; border-radius:10px; background:#2e7d32; color:#fff; font-weight:700; cursor:pointer; width:100%}
+    body{font-family:Arial, sans-serif; background:#f6fff8; margin:0;}
+    .wrap{max-width:860px; margin:0 auto; padding:24px;}
+    .card{background:#fff; padding:22px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.06);}
+    h1{margin:0 0 12px; color:#2e7d32;}
+    label{display:block; margin:12px 0 6px; font-weight:600; color:#2f5530;}
+    input[type="text"], input[type="email"], input[type="number"], select, input[type="file"]{
+      width:100%; padding:12px; border:1px solid #cfe7d1; border-radius:10px; font-size:16px;
+    }
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    .chip{display:inline-flex; align-items:center; gap:8px; background:#eef8f0; border:1px solid #dcefe0; padding:8px 10px; border-radius:999px;}
+    .btn{margin-top:16px; padding:12px 16px; font-size:16px; font-weight:700; border:none; border-radius:10px; color:#fff; background:#2e7d32; cursor:pointer;}
+    .muted{color:#6a8f6b; font-size:12px;}
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>NutreGen AI — DNA Nutrition Form</h1>
-    <form action="/generate" method="POST" enctype="multipart/form-data">
-      <label>Name</label>
-      <input type="text" name="name" required>
+  <div class="wrap">
+    <div class="card">
+      <h1>NutreGen AI — DNA & Lifestyle Form</h1>
+      <p class="muted">Fill this form and upload your DNA .txt file to get your personalised plan.</p>
 
-      <label>Email</label>
-      <input type="email" name="email" required>
+      <form action="/generate" method="POST" enctype="multipart/form-data">
+        <!-- Required -->
+        <label>Name</label>
+        <input type="text" name="name" placeholder="Your name" required>
 
-      <label>Activity level</label>
-      <select name="activity" required>
-        <option value="">— Select —</option>
-        <option>Low</option>
-        <option>Moderate</option>
-        <option>High</option>
-      </select>
+        <label>Email</label>
+        <input type="email" name="email" placeholder="you@example.com" required>
 
-      <label>Genetic traits (optional)</label>
-      <div>
-        <label><input type="checkbox" name="traits" value="Lactose Intolerant"> Lactose Intolerant</label>
-        <label><input type="checkbox" name="traits" value="Gluten Sensitive"> Gluten Sensitive</label>
-        <label><input type="checkbox" name="traits" value="Slow Fat Metabolism"> Slow Fat Metabolism</label>
-        <label><input type="checkbox" name="traits" value="High Carb Sensitivity"> High Carb Sensitivity</label>
-      </div>
+        <label>Activity level</label>
+        <select name="activity" required>
+          <option value="">— Select —</option>
+          <option>Low</option>
+          <option>Moderate</option>
+          <option>High</option>
+        </select>
 
-      <label>Upload DNA file (.txt)</label>
-      <input type="file" name="dna" accept=".txt" required>
+        <label>Genetic traits (optional)</label>
+        <div class="row">
+          <label class="chip"><input type="checkbox" name="traits" value="Lactose Intolerant"> Lactose Intolerant</label>
+          <label class="chip"><input type="checkbox" name="traits" value="Gluten Sensitive"> Gluten Sensitive</label>
+          <label class="chip"><input type="checkbox" name="traits" value="Slow Fat Metabolism"> Slow Fat Metabolism</label>
+          <label class="chip"><input type="checkbox" name="traits" value="High Carb Sensitivity"> High Carb Sensitivity</label>
+        </div>
 
-      <button type="submit">Generate my personalised plan</button>
-    </form>
+        <label>Upload DNA file (.txt)</label>
+        <input type="file" name="dna" accept=".txt" required>
+
+        <hr style="margin:18px 0; border:none; border-top:1px solid #e8f1ea">
+
+        <!-- NEW lifestyle fields -->
+        <label>Goal</label>
+        <select name="goal" required>
+          <option value="">— Select —</option>
+          <option value="loss">Weight loss</option>
+          <option value="maintenance">Maintenance</option>
+          <option value="gain">Muscle gain</option>
+        </select>
+
+        <label>Diet type</label>
+        <select name="diet">
+          <option value="regular">Regular</option>
+          <option value="vegetarian">Vegetarian</option>
+          <option value="vegan">Vegan</option>
+          <option value="pescatarian">Pescatarian</option>
+          <option value="halal">Halal</option>
+          <option value="kosher">Kosher</option>
+        </select>
+
+        <label>Allergies / intolerances</label>
+        <div class="row">
+          <label class="chip"><input type="checkbox" name="allergies" value="Nuts"> Nuts</label>
+          <label class="chip"><input type="checkbox" name="allergies" value="Dairy"> Dairy</label>
+          <label class="chip"><input type="checkbox" name="allergies" value="Eggs"> Eggs</label>
+          <label class="chip"><input type="checkbox" name="allergies" value="Shellfish"> Shellfish</label>
+          <label class="chip"><input type="checkbox" name="allergies" value="Soy"> Soy</label>
+          <label class="chip"><input type="checkbox" name="allergies" value="Gluten"> Gluten</label>
+        </div>
+
+        <label>Sleep (hours per night)</label>
+        <input type="number" name="sleep_hours" min="0" max="14" step="0.5" placeholder="e.g. 7.5">
+
+        <label>Stress level</label>
+        <select name="stress">
+          <option value="">— Select —</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+
+        <label>Water intake</label>
+        <select name="water">
+          <option value="<1L">&lt;1L</option>
+          <option value="1-2L">1–2L</option>
+          <option value=">2L">&gt;2L</option>
+        </select>
+
+        <label>Food budget</label>
+        <select name="budget">
+          <option value="£">£ (tight)</option>
+          <option value="££">££ (moderate)</option>
+          <option value="£££">£££ (flexible)</option>
+        </select>
+
+        <label>Preferred cooking time</label>
+        <select name="cook_time">
+          <option value="<15">&lt;15 min</option>
+          <option value="15-30">15–30 min</option>
+          <option value=">30">&gt;30 min</option>
+        </select>
+
+        <label>Food preferences</label>
+        <div class="row">
+          <label class="chip"><input type="checkbox" name="prefs" value="Spicy"> Spicy</label>
+          <label class="chip"><input type="checkbox" name="prefs" value="Low-carb"> Low-carb</label>
+          <label class="chip"><input type="checkbox" name="prefs" value="High-protein"> High-protein</label>
+          <label class="chip"><input type="checkbox" name="prefs" value="Mediterranean"> Mediterranean</label>
+          <label class="chip"><input type="checkbox" name="prefs" value="Indian"> Indian</label>
+        </div>
+
+        <button class="btn" type="submit">Generate my personalised plan</button>
+        <p class="muted">Your file is securely sent to NutreGen AI. Results appear immediately.</p>
+      </form>
+    </div>
   </div>
 </body>
 </html>
