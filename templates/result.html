@@ -1,81 +1,61 @@
-<!doctype html>
+<!-- templates/result.html -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Your NutreGen AI Results</title>
+  <meta charset="UTF-8">
+  <title>Nutrition Plan - NutreGen AI</title>
   <style>
-    body{font-family:Arial, sans-serif; background:#f6fff8; margin:0;}
-    .wrap{max-width:860px; margin:0 auto; padding:24px;}
-    .card{background:#fff; padding:22px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.06); margin-bottom:18px;}
-    h1,h2,h3{color:#2e7d32;}
-    .grid{display:grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap:14px;}
-    .pill{display:inline-block; padding:4px 10px; border-radius:999px; background:#eef8f0; border:1px solid #dcefe0; margin-right:6px; margin-bottom:6px;}
-    table{width:100%; border-collapse:collapse;}
-    th,td{border:1px solid #e8f1ea; padding:10px; text-align:left;}
-    th{background:#eef8f0;}
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
+    .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 3px 12px rgba(0,0,0,0.1); }
+    h1, h2 { text-align: center; color: #4CAF50; }
+    p { font-size: 16px; color: #333; line-height: 1.5; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    th { background: #4CAF50; color: #fff; }
+    .btns { text-align: center; margin-top: 30px; }
+    a.button {
+      display: inline-block; padding: 12px 20px; margin: 10px;
+      background: #4CAF50; color: white; border-radius: 8px;
+      text-decoration: none; font-weight: bold;
+    }
+    a.button:hover { background: #45a049; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>Personalised Nutrition Plan</h1>
-      <p><b>Name:</b> {{ name }} &nbsp; | &nbsp; <b>Email:</b> {{ email }}</p>
-      <p><b>Activity:</b> {{ activity }}</p>
-      <p><b>DNA summary:</b> {{ dna_summary }}</p>
-    </div>
+  <div class="container">
+    <h1>NutreGen AI Nutrition Plan</h1>
+    <p><strong>Name:</strong> {{ name }}</p>
+    <p><strong>Email:</strong> {{ email }}</p>
+    <p><strong>Activity Level:</strong> {{ activity }}</p>
+    <p><strong>DNA Summary:</strong> {{ dna_summary }}</p>
 
-    <div class="card">
-      <h2>Your profile summary</h2>
-      <div class="grid">
-        <div>
-          <p><b>Goal:</b> {{ goal|title if goal else "—" }}</p>
-          <p><b>Diet type:</b> {{ diet|title if diet else "—" }}</p>
-          <p><b>Allergies:</b> {{ allergies|join(", ") if allergies else "None reported" }}</p>
-          <p><b>Preferences:</b>
-            {% if prefs and prefs|length %}
-              {% for p in prefs %}<span class="pill">{{ p }}</span>{% endfor %}
-            {% else %} — {% endif %}
-          </p>
-        </div>
-        <div>
-          <p><b>Sleep:</b> {{ sleep_hours or "—" }} hrs/night</p>
-          <p><b>Stress:</b> {{ stress|title if stress else "—" }}</p>
-          <p><b>Water:</b> {{ water or "—" }}</p>
-          <p><b>Budget:</b> {{ budget or "—" }} &nbsp;&nbsp; <b>Cook time:</b> {{ cook_time or "—" }}</p>
-        </div>
-      </div>
-    </div>
+    <h2>Macronutrient Breakdown</h2>
+    <p>Calories: {{ calories }} kcal/day</p>
+    <ul>
+      <li>Carbohydrates: {{ macros.carbs }}%</li>
+      <li>Fats: {{ macros.fats }}%</li>
+      <li>Protein: {{ macros.protein }}%</li>
+    </ul>
 
-    <div class="card">
-      <h2>Targets</h2>
-      <table>
-        <tr><th>Calories (daily)</th><th>Carbs</th><th>Fats</th><th>Protein</th></tr>
-        <tr>
-          <td>{{ calories }}</td>
-          <td>{{ macros.carbs }}%</td>
-          <td>{{ macros.fats }}%</td>
-          <td>{{ macros.protein }}%</td>
-        </tr>
-      </table>
-    </div>
+    <h2>Suggested Meal Plan</h2>
+    <table>
+      <tr>
+        <th>Meal</th>
+        <th>Idea</th>
+        <th>Notes</th>
+      </tr>
+      {% for item in plan %}
+      <tr>
+        <td>{{ item.meal }}</td>
+        <td>{{ item.idea }}</td>
+        <td>{{ item.notes }}</td>
+      </tr>
+      {% endfor %}
+    </table>
 
-    <div class="card">
-      <h2>Meal ideas</h2>
-      <table>
-        <tr><th>Meal</th><th>Idea</th><th>Notes</th></tr>
-        {% for item in plan %}
-          <tr>
-            <td>{{ item.meal }}</td>
-            <td>{{ item.idea }}</td>
-            <td>{{ item.notes }}</td>
-          </tr>
-        {% endfor %}
-      </table>
-    </div>
-
-    <div class="card">
-      <a href="/form" style="color:#2e7d32; font-weight:700;">← Create another plan</a>
+    <div class="btns">
+      <a href="{{ url_for('download_pdf', email=email) }}" class="button">⬇️ Download as PDF</a>
+      <a href="{{ url_for('send_email_pdf', email=email) }}" class="button">📧 Email PDF</a>
     </div>
   </div>
 </body>
