@@ -14,10 +14,6 @@
     table{width:100%; border-collapse:collapse;}
     th,td{border:1px solid #e8f1ea; padding:10px; text-align:left;}
     th{background:#eef8f0;}
-    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
-    .btn{display:inline-block; padding:10px 14px; border-radius:10px; background:#2e7d32; color:#fff; text-decoration:none; font-weight:700;}
-    .btn.secondary{background:#388e3c;}
-    .note{color:#6a8f6b; font-size:13px;}
   </style>
 </head>
 <body>
@@ -27,12 +23,6 @@
       <p><b>Name:</b> {{ name }} &nbsp; | &nbsp; <b>Email:</b> {{ email }}</p>
       <p><b>Activity:</b> {{ activity }}</p>
       <p><b>DNA summary:</b> {{ dna_summary }}</p>
-
-      <div class="actions">
-        <a class="btn" href="/download-pdf?id={{ rid }}">Download PDF</a>
-        <a class="btn secondary" href="/email-plan?id={{ rid }}">Send to my email</a>
-      </div>
-      <p class="note">You’ll also be able to re-download your PDF later using the email link.</p>
     </div>
 
     <div class="card">
