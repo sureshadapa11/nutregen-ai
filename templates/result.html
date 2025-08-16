@@ -1,86 +1,92 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Your Plan — NutreGen AI</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Your NutreGen AI Results</title>
   <style>
-    body{font-family:Arial, sans-serif; background:#f6fff8; padding:24px}
-    .card{max-width:800px; margin:0 auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.06)}
-    .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    .pill{display:inline-block; background:#eef8f0; border:1px solid #dcefe0; padding:6px 10px; border-radius:999px; margin:4px 6px 0 0}
-    table{width:100%; border-collapse:collapse; margin-top:10px}
-    td,th{border:1px solid #e6efe8; padding:10px; text-align:left}
+    body{font-family:Arial, sans-serif; background:#f6fff8; margin:0;}
+    .wrap{max-width:860px; margin:0 auto; padding:24px;}
+    .card{background:#fff; padding:22px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.06); margin-bottom:18px;}
+    h1,h2,h3{color:#2e7d32;}
+    .grid{display:grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap:14px;}
+    .pill{display:inline-block; padding:4px 10px; border-radius:999px; background:#eef8f0; border:1px solid #dcefe0; margin-right:6px; margin-bottom:6px;}
+    table{width:100%; border-collapse:collapse;}
+    th,td{border:1px solid #e8f1ea; padding:10px; text-align:left;}
+    th{background:#eef8f0;}
+    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
+    .btn{display:inline-block; padding:10px 14px; border-radius:10px; background:#2e7d32; color:#fff; text-decoration:none; font-weight:700;}
+    .btn.secondary{background:#388e3c;}
+    .note{color:#6a8f6b; font-size:13px;}
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Your personalised plan</h1>
-    <p><strong>Name:</strong> {{ name }}<br>
-       <strong>Email:</strong> {{ email }}</p>
+  <div class="wrap">
+    <div class="card">
+      <h1>Personalised Nutrition Plan</h1>
+      <p><b>Name:</b> {{ name }} &nbsp; | &nbsp; <b>Email:</b> {{ email }}</p>
+      <p><b>Activity:</b> {{ activity }}</p>
+      <p><b>DNA summary:</b> {{ dna_summary }}</p>
 
-    <div class="grid">
-      <div>
-        <p><strong>Activity:</strong> {{ activity }}</p>
-        <p><strong>Genetic traits:</strong>
-          {% if traits and traits|length %}
-            {% for t in traits %}<span class="pill">{{ t }}</span>{% endfor %}
-          {% else %} None provided
-          {% endif %}
-        </p>
-        <p><strong>DNA file:</strong> {{ dna_summary }}</p>
+      <div class="actions">
+        <a class="btn" href="/download-pdf?id={{ rid }}">Download PDF</a>
+        <a class="btn secondary" href="/email-plan?id={{ rid }}">Send to my email</a>
       </div>
-      <div>
-        <p><strong>Target calories:</strong> {{ calories }} kcal/day</p>
-        <p><strong>Macros:</strong><br>
-          Carbs: {{ macros.carbs }}%<br>
-          Fats: {{ macros.fats }}%<br>
-          Protein: {{ macros.protein }}%</p>
+      <p class="note">You’ll also be able to re-download your PDF later using the email link.</p>
+    </div>
+
+    <div class="card">
+      <h2>Your profile summary</h2>
+      <div class="grid">
+        <div>
+          <p><b>Goal:</b> {{ goal|title if goal else "—" }}</p>
+          <p><b>Diet type:</b> {{ diet|title if diet else "—" }}</p>
+          <p><b>Allergies:</b> {{ allergies|join(", ") if allergies else "None reported" }}</p>
+          <p><b>Preferences:</b>
+            {% if prefs and prefs|length %}
+              {% for p in prefs %}<span class="pill">{{ p }}</span>{% endfor %}
+            {% else %} — {% endif %}
+          </p>
+        </div>
+        <div>
+          <p><b>Sleep:</b> {{ sleep_hours or "—" }} hrs/night</p>
+          <p><b>Stress:</b> {{ stress|title if stress else "—" }}</p>
+          <p><b>Water:</b> {{ water or "—" }}</p>
+          <p><b>Budget:</b> {{ budget or "—" }} &nbsp;&nbsp; <b>Cook time:</b> {{ cook_time or "—" }}</p>
+        </div>
       </div>
     </div>
 
-    <h2>Meal ideas</h2>
-    <table>
-      <tr><th>Meal</th><th>Idea</th><th>Notes</th></tr>
-      {% for m in plan %}
-        <tr><td>{{ m.meal }}</td><td>{{ m.idea }}</td><td>{{ m.notes }}</td></tr>
-      {% endfor %}
-    </table>
+    <div class="card">
+      <h2>Targets</h2>
+      <table>
+        <tr><th>Calories (daily)</th><th>Carbs</th><th>Fats</th><th>Protein</th></tr>
+        <tr>
+          <td>{{ calories }}</td>
+          <td>{{ macros.carbs }}%</td>
+          <td>{{ macros.fats }}%</td>
+          <td>{{ macros.protein }}%</td>
+        </tr>
+      </table>
+    </div>
 
-    <p style="margin-top:16px;">
-      <a href="/form">← Create another plan</a>
-    </p>
-    <hr style="margin: 16px 0;">
+    <div class="card">
+      <h2>Meal ideas</h2>
+      <table>
+        <tr><th>Meal</th><th>Idea</th><th>Notes</th></tr>
+        {% for item in plan %}
+          <tr>
+            <td>{{ item.meal }}</td>
+            <td>{{ item.idea }}</td>
+            <td>{{ item.notes }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
 
-<form action="/download-pdf" method="POST">
-  <!-- Required fields -->
-  <input type="hidden" name="name" value="{{ name }}">
-  <input type="hidden" name="email" value="{{ email }}">
-  <input type="hidden" name="activity" value="{{ activity }}">
-  <input type="hidden" name="calories" value="{{ calories }}">
-  <input type="hidden" name="macros_carbs" value="{{ macros.carbs }}">
-  <input type="hidden" name="macros_fats" value="{{ macros.fats }}">
-  <input type="hidden" name="macros_protein" value="{{ macros.protein }}">
-
-  <!-- Traits (multiple) -->
-  {% if traits %}
-    {% for t in traits %}
-      <input type="hidden" name="traits" value="{{ t }}">
-    {% endfor %}
-  {% endif %}
-
-  <!-- Meal plan as JSON -->
-  <input type="hidden" name="plan_json" value='{{ plan|tojson }}'>
-
-  <!-- DNA summary text -->
-  <input type="hidden" name="dna_summary" value="{{ dna_summary }}">
-
-  <button type="submit" style="
-    width: 100%; padding: 12px 16px; border: none; border-radius: 10px;
-    background: #2e7d32; color: #fff; font-weight: 700; cursor: pointer;">
-    Download PDF
-  </button>
-</form>
-
+    <div class="card">
+      <a href="/form" style="color:#2e7d32; font-weight:700;">← Create another plan</a>
+    </div>
   </div>
 </body>
 </html>
