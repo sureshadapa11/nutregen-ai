@@ -224,13 +224,17 @@ def generate_plan_html():
     except Exception as e:
         print("CSV log error:", e)
 
-    return render_template(
-        "result.html",
-        name=name, email=email, activity=activity, traits=traits,
-        goal=goal, diet=diet, allergies=allergies, sleep_hours=sleep_hrs,
-        stress=stress, water=water, budget=budget, cook_time=cook_time,
-        calories=calories, macros=macros, plan=plan, dna_summary=dna_summary
-    )
+    token = PDF_SIGNER.dumps(payload)
+
+return render_template(
+    "result.html",
+    token=token,   # <-- this line MUST be present
+    name=name, email=email, activity=activity, traits=traits,
+    goal=goal, diet=diet, allergies=allergies, sleep_hours=sleep_hrs,
+    stress=stress, water=water, budget=budget, cook_time=cook_time,
+    calories=calories, macros=macros, plan=plan, dna_summary=dna_summary
+)
+
 
 # JSON endpoint for mobile apps (optional but useful)
 @app.route("/api/generate", methods=["POST"])
