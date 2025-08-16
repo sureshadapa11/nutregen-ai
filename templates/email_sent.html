@@ -1,23 +1,28 @@
-<!doctype html>
+<!-- templates/email_sent.html -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Email sent</title>
+  <meta charset="UTF-8">
+  <title>Email Sent - NutreGen AI</title>
   <style>
-    body{font-family:Arial, sans-serif; background:#f6fff8; margin:0;}
-    .wrap{max-width:680px; margin:0 auto; padding:24px;}
-    .card{background:#fff; padding:22px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.06);}
-    h1{color:#2e7d32;}
+    body { font-family: Arial, sans-serif; text-align: center; padding: 40px; background: #f9f9f9; }
+    .card { max-width: 500px; margin: auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #4CAF50; margin-bottom: 10px; }
+    p { color: #333; font-size: 16px; }
+    a.button {
+      display: inline-block; margin-top: 20px;
+      padding: 12px 20px; background: #4CAF50; color: white;
+      border-radius: 8px; text-decoration: none;
+    }
+    a.button:hover { background: #45a049; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>Plan sent to your email ✅</h1>
-      <p>We’ve emailed your PDF to <b>{{ email }}</b>. Please check your inbox (and spam folder).</p>
-      <p><a href="/form" style="color:#2e7d32; font-weight:700;">← Back to form</a></p>
-    </div>
+  <div class="card">
+    <h1>✅ Email Sent!</h1>
+    <p>Your personalised NutreGen AI nutrition plan has been sent to:</p>
+    <p><strong>{{ email }}</strong></p>
+    <a href="/" class="button">Back to Home</a>
   </div>
 </body>
 </html>
