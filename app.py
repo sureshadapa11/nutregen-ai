@@ -209,58 +209,145 @@ def log_csv(row):
 # -----------------------------------------------------------------------------
 def build_pdf_bytes(data):
     buf = io.BytesIO()
-    c = canvas.Canvas(buf, pagesize=A4)
-    width, height = A4
 
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(1*inch, height - 1*inch, "NutreGen AI — Personalised Nutrition Plan")
+    # Document & margins
+    doc = SimpleDocTemplate(
+        buf,
+        pagesize=A4,
+        leftMargin=2*cm, rightMargin=2*cm,
+        topMargin=1.7*cm, bottomMargin=1.7*cm,
+        title="NutreGen AI — Personalised Nutrition Plan",
+        author="NutreGen AI"
+    )
 
-    y = height - 1.3*inch
-    def line(txt, font="Helvetica", size=11, gap=14):
-        nonlocal y
-        if y < 1*inch:
-            c.showPage(); y = height - 1*inch; c.setFont(font, size)
-        else:
-            c.setFont(font, size)
-        c.drawString(1*inch, y, txt)
-        y -= gap
+    # ---------- Styles ----------
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name="H1", parent=styles["Heading1"], fontName="Helvetica-Bold", fontSize=18, textColor=colors.HexColor("#2e7d32"), spaceAfter=8))
+    styles.add(ParagraphStyle(name="H2", parent=styles["Heading2"], fontName="Helvetica-Bold", fontSize=14, textColor=colors.HexColor("#2e7d32"), spaceBefore=8, spaceAfter=6))
+    styles.add(ParagraphStyle(name="Body", parent=styles["BodyText"], fontSize=10.5, leading=14))
+    styles.add(ParagraphStyle(name="Muted", parent=styles["BodyText"], fontSize=9, textColor=colors.HexColor("#6a8f6b")))
+    styles.add(ParagraphStyle(name="Label", parent=styles["BodyText"], fontSize=10.5, textColor=colors.HexColor("#2f5530")))
+    styles.add(ParagraphStyle(name="KPI", parent=styles["BodyText"], fontSize=11.5, leading=14, textColor=colors.HexColor("#1b5e20")))
+    styles.add(ParagraphStyle(name="Small", parent=styles["BodyText"], fontSize=8.5, textColor=colors.grey))
+
+    # ---------- Elements ----------
+    E = []
 
     # Header
-    line(f"Name: {data.get('name','')}")
-    line(f"Email: {data.get('email','')}")
-    line(f"Activity: {data.get('activity','')}")
-    line(f"DNA summary: {data.get('dna_summary','')}")
-    line("")
+    E.append(Paragraph("NutreGen AI — Personalised Nutrition Plan", styles["H1"]))
+    sub = f"{data.get('name','')} &bull; {data.get('email','')} &bull; {data.get('activity','')}"
+    E.append(Paragraph(sub, styles["Muted"]))
+    E.append(Spacer(1, 6))
+    E.append(HRFlowable(color=colors.HexColor("#e0eee3"), width="100%", thickness=1))
+    E.append(Spacer(1, 10))
 
-    # Profile
-    line("Profile", "Helvetica-Bold", 12, 18)
+    # DNA summary / info grid
+    info = [
+        ["DNA summary", data.get("dna_summary", "—")],
+        ["Goal", (data.get("goal") or "—").title() if data.get("goal") else "—"],
+        ["Diet", (data.get("diet") or "—").title() if data.get("diet") else "—"],
+    ]
     allergies = ", ".join(data.get("allergies", [])) or "None"
     prefs = ", ".join(data.get("prefs", [])) or "—"
-    line(f"Goal: {data.get('goal','-')}")
-    line(f"Diet: {data.get('diet','-')}")
-    line(f"Allergies: {allergies}")
-    line(f"Preferences: {prefs}")
-    line(f"Sleep (hrs): {data.get('sleep_hours','-')}")
-    line(f"Stress: {data.get('stress','-')}")
-    line(f"Water: {data.get('water','-')}")
-    line(f"Budget: {data.get('budget','-')} | Cook time: {data.get('cook_time','-')}")
-    line("")
+    info += [
+        ["Allergies", allergies],
+        ["Preferences", prefs],
+        ["Sleep (hrs)", str(data.get("sleep_hours") or "—")],
+        ["Stress", (data.get("stress") or "—").title() if data.get("stress") else "—"],
+        ["Water", data.get("water") or "—"],
+        ["Budget / Cook time", f"{data.get('budget','—')} / {data.get('cook_time','—')}"],
+    ]
 
-    # Targets
+    t_info = Table(info, colWidths=[4.0*cm, None])
+    t_info.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#f3fbf4")),
+        ("TEXTCOLOR",  (0,0), (-1,0), colors.HexColor("#2e7d32")),
+        ("FONTNAME",   (0,0), (-1,0), "Helvetica-Bold"),
+        ("INNERGRID",  (0,0), (-1,-1), 0.25, colors.HexColor("#e6efe8")),
+        ("BOX",        (0,0), (-1,-1), 0.5, colors.HexColor("#e6efe8")),
+        ("VALIGN",     (0,0), (-1,-1), "MIDDLE"),
+        ("FONTNAME",   (0,1), (0,-1), "Helvetica-Bold"),
+        ("TEXTCOLOR",  (0,1), (0,-1), colors.HexColor("#2f5530")),
+        ("LEFTPADDING",(0,0), (-1,-1), 6),
+        ("RIGHTPADDING",(0,0), (-1,-1), 6),
+        ("TOPPADDING", (0,0), (-1,-1), 6),
+        ("BOTTOMPADDING",(0,0), (-1,-1), 6),
+    ]))
+    E.append(t_info)
+    E.append(Spacer(1, 12))
+
+    # Targets (Calories + Macros)
+    E.append(Paragraph("Daily Targets", styles["H2"]))
     macros = data.get("macros", {})
-    line("Targets", "Helvetica-Bold", 12, 18)
-    line(f"Calories (daily): {data.get('calories','')}")
-    line(f"Macros: Carbs {macros.get('carbs','-')}% | Fats {macros.get('fats','-')}% | Protein {macros.get('protein','-')}%")
-    line("")
+    kpi = [
+        ["Calories (kcal)", str(data.get("calories","—"))],
+        ["Carbs (%)",       str(macros.get("carbs","—"))],
+        ["Fats (%)",        str(macros.get("fats","—"))],
+        ["Protein (%)",     str(macros.get("protein","—"))],
+    ]
+    t_kpi = Table(kpi, colWidths=[5.0*cm, None])
+    t_kpi.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#2e7d32")),
+        ("TEXTCOLOR",  (0,0), (-1,0), colors.white),
+        ("FONTNAME",   (0,0), (-1,0), "Helvetica-Bold"),
+        ("ROWBACKGROUNDS", (0,1), (-1,-1),
+            [colors.HexColor("#f9fffb"), colors.HexColor("#f3fbf4")]),
+        ("INNERGRID",  (0,0), (-1,-1), 0.25, colors.HexColor("#d9eadf")),
+        ("BOX",        (0,0), (-1,-1), 0.5, colors.HexColor("#d9eadf")),
+        ("VALIGN",     (0,0), (-1,-1), "MIDDLE"),
+        ("LEFTPADDING",(0,0), (-1,-1), 6),
+        ("RIGHTPADDING",(0,0), (-1,-1), 6),
+        ("TOPPADDING", (0,0), (-1,-1), 6),
+        ("BOTTOMPADDING",(0,0), (-1,-1), 6),
+    ]))
+    E.append(t_kpi)
+    E.append(Spacer(1, 12))
 
-    # Meals
-    line("Meal Ideas", "Helvetica-Bold", 12, 18)
+    # Meal ideas (table with zebra striping)
+    E.append(Paragraph("Meal Ideas", styles["H2"]))
+    meals = [["Meal", "Idea", "Notes"]]
     for item in data.get("plan", []):
-        line(f"- {item.get('meal')}: {item.get('idea')} ({item.get('notes')})")
+        meals.append([item.get("meal",""), item.get("idea",""), item.get("notes","")])
+    t_meals = Table(meals, colWidths=[2.8*cm, 9.0*cm, None])
+    t_meals.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#2e7d32")),
+        ("TEXTCOLOR",  (0,0), (-1,0), colors.white),
+        ("FONTNAME",   (0,0), (-1,0), "Helvetica-Bold"),
+        ("ROWBACKGROUNDS", (0,1), (-1,-1),
+            [colors.HexColor("#ffffff"), colors.HexColor("#f7fbf8")]),
+        ("INNERGRID",  (0,0), (-1,-1), 0.25, colors.HexColor("#d9eadf")),
+        ("BOX",        (0,0), (-1,-1), 0.5, colors.HexColor("#d9eadf")),
+        ("VALIGN",     (0,0), (-1,-1), "TOP"),
+        ("LEFTPADDING",(0,0), (-1,-1), 6),
+        ("RIGHTPADDING",(0,0), (-1,-1), 6),
+        ("TOPPADDING", (0,0), (-1,-1), 6),
+        ("BOTTOMPADDING",(0,0), (-1,-1), 6),
+    ]))
+    E.append(t_meals)
+    E.append(Spacer(1, 10))
 
-    c.save()
-    buf.seek(0)
-    return buf.read()
+    # Footer note
+    E.append(Spacer(1, 6))
+    E.append(HRFlowable(color=colors.HexColor("#e0eee3"), width="100%", thickness=1))
+    E.append(Spacer(1, 6))
+    E.append(Paragraph("This plan is generated from your provided DNA & lifestyle inputs for informational purposes.", styles["Small"]))
+
+    # Page footer with brand + page number
+    def on_page(canvas, doc_):
+        canvas.saveState()
+        footer = "NutreGen AI • nutregen.ai"
+        canvas.setFont("Helvetica", 8)
+        canvas.setFillColor(colors.HexColor("#6a8f6b"))
+        canvas.drawString(2*cm, 1.0*cm, footer)
+        canvas.drawRightString(A4[0]-2*cm, 1.0*cm, f"Page {doc_.page}")
+        canvas.restoreState()
+
+    # Build
+    doc.build(E, onFirstPage=on_page, onLaterPages=on_page)
+    pdf_bytes = buf.getvalue()
+    buf.close()
+    return pdf_bytes
+
 
 def send_email_with_pdf(to_email, subject, html, pdf_bytes, filename="NutreGenAI_Plan.pdf"):
     if not RESEND_API_KEY:
